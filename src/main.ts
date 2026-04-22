@@ -1,4 +1,4 @@
-import { bootstrap } from "./composition/bootstrap.js";
+import { bootstrap } from "./bootstrap.js";
 
 const port = Number(process.env.PORT) || 8080;
 const { app } = bootstrap();
