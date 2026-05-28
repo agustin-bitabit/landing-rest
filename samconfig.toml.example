@@ -1,0 +1,16 @@
+# Copiá este archivo a samconfig.toml después de `sam deploy --guided`
+# o generá samconfig.toml automáticamente con el guided deploy.
+
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "landing-rest"
+resolve_s3 = true
+s3_prefix = "landing-rest"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "MongoDbUri=\"\" JwtSecret=\"\" ContentfulSpaceId=\"\" ContentfulAccessToken=\"\" CorsOrigin=\"https://tu-cloudfront.cloudfront.net\""
+
+[default.build.parameters]
+use_container = true
