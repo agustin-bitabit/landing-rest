@@ -13,7 +13,6 @@ docs/
 lambda/
 scripts/
 *.md
-vercel.json
 *.zip
 *.log
 .DS_Store
