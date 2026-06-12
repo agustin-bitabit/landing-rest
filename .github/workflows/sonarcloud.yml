@@ -1,0 +1,45 @@
+name: SonarCloud
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  sonarcloud:
+    name: Análisis SonarCloud
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Tests con cobertura
+        run: npm run test:coverage
+
+      - name: Normalizar rutas del reporte LCOV
+        run: sed -i 's|\\|/|g' coverage/lcov.info
+
+      - name: Verificar reporte de cobertura
+        run: |
+          test -f coverage/lcov.info
+          echo "Archivos en lcov.info:"
+          grep '^SF:' coverage/lcov.info | head -20
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
