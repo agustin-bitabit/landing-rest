@@ -22,8 +22,12 @@ export function createApp(testimonialService, userService, loginService) {
   const userController = new UserController(userService);
   const loginController = new LoginController(loginService);
 
-  app.use("/api/testimonials", authenticate, createTestimonialRouter(testimonialController));
-  app.use("/api/users", createUserRouter(userController));
+  app.use(
+    "/api/testimonials",
+    authenticate,
+    createTestimonialRouter(testimonialController),
+  );
+  app.use("/api/users", authenticate, createUserRouter(userController));
   app.use("/api", createLoginRouter(loginController));
   
   app.get("/health", (_req, res) => {

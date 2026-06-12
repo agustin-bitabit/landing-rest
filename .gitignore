@@ -1,4 +1,5 @@
 node_modules/
+coverage/
 .aws-sam/
 samconfig.toml
 dist/
