@@ -29,6 +29,15 @@ jobs:
       - name: Tests con cobertura
         run: npm run test:coverage
 
+      - name: Normalizar rutas del reporte LCOV
+        run: sed -i 's|\\|/|g' coverage/lcov.info
+
+      - name: Verificar reporte de cobertura
+        run: |
+          test -f coverage/lcov.info
+          echo "Archivos en lcov.info:"
+          grep '^SF:' coverage/lcov.info | head -20
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         env:
