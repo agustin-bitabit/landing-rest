@@ -1,0 +1,108 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: landing-rest — Express en Lambda + HTTP API (SAM)
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: nodejs20.x
+    Architectures:
+      - x86_64
+
+Parameters:
+  MongoDbUri:
+    Type: String
+    NoEcho: true
+    Description: URI de MongoDB (Atlas u otro)
+  JwtSecret:
+    Type: String
+    NoEcho: true
+    Description: Secreto para firmar JWT
+  ContentfulSpaceId:
+    Type: String
+  ContentfulAccessToken:
+    Type: String
+    NoEcho: true
+  ContentfulEnvironment:
+    Type: String
+    Default: master
+  ContentfulTestimonialContentType:
+    Type: String
+    Default: testimonios
+  ContentfulLocale:
+    Type: String
+    Default: en-US
+  CorsOrigin:
+    Type: String
+    Default: ""
+    Description: Orígenes CORS separados por coma (vacío = defaults en código)
+  ApiGatewayStage:
+    Type: String
+    Default: ""
+    Description: Stage de API Gateway a quitar del path (ej. default)
+  ApiBasePath:
+    Type: String
+    Default: ""
+    Description: Prefijo base del API (ej. landing-back)
+
+Resources:
+  LandingRestHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: $default
+      CorsConfiguration:
+        AllowOrigins:
+          - "*"
+        AllowMethods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+          - OPTIONS
+        AllowHeaders:
+          - Content-Type
+          - Authorization
+
+  LandingApiFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: nodejs20.x
+    Properties:
+      Handler: src/lambda.handler
+      CodeUri: .
+      Description: API REST landing (Express + serverless-http)
+      Environment:
+        Variables:
+          MONGODB_URI: !Ref MongoDbUri
+          JWT_SECRET: !Ref JwtSecret
+          CONTENTFUL_SPACE_ID: !Ref ContentfulSpaceId
+          CONTENTFUL_ACCESS_TOKEN: !Ref ContentfulAccessToken
+          CONTENTFUL_ENVIRONMENT: !Ref ContentfulEnvironment
+          CONTENTFUL_TESTIMONIAL_CONTENT_TYPE: !Ref ContentfulTestimonialContentType
+          CONTENTFUL_LOCALE: !Ref ContentfulLocale
+          CORS_ORIGIN: !Ref CorsOrigin
+          API_GATEWAY_STAGE: !Ref ApiGatewayStage
+          API_BASE_PATH: !Ref ApiBasePath
+      Events:
+        ProxyApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref LandingRestHttpApi
+            Method: ANY
+            Path: /{proxy+}
+        RootApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref LandingRestHttpApi
+            Method: ANY
+            Path: /
+
+Outputs:
+  HttpApiUrl:
+    Description: URL base del HTTP API
+    Value: !Sub "https://${LandingRestHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+  FunctionArn:
+    Description: ARN de la función Lambda
+    Value: !GetAtt LandingApiFunction.Arn

@@ -1,0 +1,19 @@
+# No empaquetar en el zip de Lambda (solo config local / deploy)
+.env
+.env.*
+samconfig.toml
+samconfig.toml.example
+samconfig.toml.*
+!.env.example
+.git/
+.github/
+.aws-sam/
+node_modules/
+docs/
+lambda/
+scripts/
+*.md
+vercel.json
+*.zip
+*.log
+.DS_Store
