@@ -4,21 +4,28 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "start": "node dist/main.js",
-    "dev": "tsx watch src/main.ts",
-    "typecheck": "tsc --noEmit"
+    "start": "node src/main.js",
+    "dev": "node --watch src/main.js",
+    "test": "node --test tests/**/*.test.js",
+    "test:coverage": "c8 --reporter=lcov --reporter=text node --test tests/**/*.test.js",
+    "sam:build": "sam build --use-container",
+    "sam:deploy": "sam deploy",
+    "sam:local": "sam local start-api"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "bcrypt": "^6.0.0",
+    "contentful": "^11.12.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.6.2",
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
-    "@types/express": "^4.17.21",
-    "@types/node": "^22.10.5",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "c8": "^10.1.3"
   }
 }
